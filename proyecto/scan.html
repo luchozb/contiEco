@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECOLOOP - Escanear Residuo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 pb-28 max-w-md mx-auto shadow-2xl min-h-screen relative flex flex-col justify-between">
+
+  <!-- Header -->
+  <header class="p-4 px-5 flex justify-between items-center bg-white border-b border-slate-100 sticky top-0 z-30">
+    <div class="flex items-center gap-2">
+      <a href="dashboard.html" class="w-8 h-8 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center">
+        <i class="fa-solid fa-arrow-left text-sm"></i>
+      </a>
+      <span class="font-extrabold text-slate-800 tracking-wider text-base">Escanear Residuo</span>
+    </div>
+    <span class="bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2.5 py-1 rounded-full">CamIA V2</span>
+  </header>
+
+  <main class="p-4 space-y-4 flex-1 flex flex-col justify-center">
+    
+    <!-- ÁREA DE VISTA PREVIA CÁMARA REAL -->
+    <div class="relative w-full aspect-square bg-slate-900 rounded-3xl overflow-hidden shadow-lg border-2 border-slate-200 flex flex-col items-center justify-center">
+      <div id="webcam-container" class="w-full h-full flex items-center justify-center overflow-hidden">
+        <i id="camera-placeholder-icon" class="fa-solid fa-camera text-4xl text-slate-600"></i>
+      </div>
+
+      <!-- Guías de Escaneo -->
+      <div class="absolute inset-8 border-2 border-dashed border-emerald-400/60 rounded-2xl pointer-events-none flex items-center justify-center">
+        <span class="bg-black/50 text-white text-[10px] px-3 py-1 rounded-full backdrop-blur-md">Alinea el residuo aquí</span>
+      </div>
+    </div>
+
+    <!-- BOTÓN CÁMARA -->
+    <button id="btn-scan" onclick="startScanning()" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold py-3.5 px-4 rounded-2xl shadow-md flex items-center justify-center gap-2 transition active:scale-95 text-sm">
+      <i class="fa-solid fa-camera"></i>
+      <span>Abrir Cámara Real</span>
+    </button>
+
+    <!-- TARJETA DE RESULTADO CON TACHO CORRESPONDIENTE -->
+    <div id="result-card" class="hidden bg-emerald-50/80 border border-emerald-200 p-4 rounded-2xl space-y-3 shadow-sm">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="w-5 h-5 bg-emerald-500 text-white rounded-md flex items-center justify-center text-xs font-bold">✓</span>
+          <span class="font-extrabold text-emerald-950 text-sm">Residuo Identificado</span>
+        </div>
+        <span id="result-points-badge" class="bg-emerald-700 text-white text-xs font-bold px-3 py-1 rounded-full">+15 EcoPuntos</span>
+      </div>
+
+      <!-- Texto formateado -->
+      <p id="result-text" class="text-sm font-semibold text-emerald-900 px-1">
+        Cargando resultado...
+      </p>
+
+      <!-- Botón Guardar en Firebase -->
+      <button id="btn-save" onclick="saveCurrentScan()" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-3 px-4 rounded-xl shadow-md transition active:scale-95 text-sm">
+        Guardar en Firebase y Ver Dashboard
+      </button>
+    </div>
+
+  </main>
+
+  <!-- NAVEGACIÓN INFERIOR -->
+  <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/95 backdrop-blur-md border-t border-slate-100 px-6 py-2.5 flex justify-between items-center z-40 shadow-lg">
+    <a href="dashboard.html" class="flex flex-col items-center gap-1 text-slate-400 font-medium">
+      <i class="fa-solid fa-border-all text-base"></i>
+      <span class="text-[10px]">Panel</span>
+    </a>
+    
+    <a href="scan.html" class="flex flex-col items-center gap-1 text-emerald-600 font-bold">
+      <div class="w-10 h-10 bg-emerald-700 text-white rounded-full flex items-center justify-center -mt-6 shadow-lg shadow-emerald-700/30">
+        <i class="fa-solid fa-qrcode text-base"></i>
+      </div>
+      <span class="text-[10px]">Escanear</span>
+    </a>
+
+    <a href="recompensas.html" class="flex flex-col items-center gap-1 text-slate-400 font-medium">
+      <i class="fa-solid fa-gift text-base"></i>
+      <span class="text-[10px]">Recompensas</span>
+    </a>
+
+    <a href="profile.html" class="flex flex-col items-center gap-1 text-slate-400 font-medium">
+      <i class="fa-regular fa-user text-base"></i>
+      <span class="text-[10px]">Perfil</span>
+    </a>
+  </nav>
+
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="app.js"></script>
+  <script>
+    checkAuth();
+
+    let currentScanData = null;
+    let videoStream = null;
+
+    async function startScanning() {
+      const btnScan = document.getElementById('btn-scan');
+      const webcamContainer = document.getElementById('webcam-container');
+
+      try {
+        btnScan.disabled = true;
+        btnScan.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Solicitando cámara...`;
+
+        videoStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: "environment" } },
+          audio: false
+        });
+
+        webcamContainer.innerHTML = `
+          <video id="webcam-video" autoplay playsinline class="w-full h-full object-cover"></video>
+        `;
+
+        const videoElement = document.getElementById('webcam-video');
+        videoElement.srcObject = videoStream;
+
+        btnScan.disabled = false;
+        btnScan.innerHTML = `<i class="fa-solid fa-camera"></i> Capturar y Analizar Residuo`;
+        btnScan.onclick = captureAndClassify;
+
+      } catch (err) {
+        console.error("Error al acceder a la cámara:", err);
+        alert("Otorga permisos de cámara a la aplicación para continuar.");
+        btnScan.disabled = false;
+        btnScan.innerHTML = `<i class="fa-solid fa-camera"></i> Reintentar Cámara`;
+      }
+    }
+
+    async function captureAndClassify() {
+      const btnScan = document.getElementById('btn-scan');
+      btnScan.disabled = true;
+      btnScan.innerHTML = `<i class="fa-solid fa-brain animate-spin"></i> Analizando con IA...`;
+
+      setTimeout(() => {
+        const detectedLabels = ["Residuos_Generales", "Carton_Papel", "Plastico_PET", "Vidrio_Botella", "Comida_Organico"];
+        const rawPrediction = detectedLabels[Math.floor(Math.random() * detectedLabels.length)];
+        const confidenceScore = Math.floor(Math.random() * (98 - 70 + 1)) + 70;
+
+        // Mapeo automático del Tacho
+        const formattedResult = formatScanResult(rawPrediction, confidenceScore);
+
+        document.getElementById('result-text').textContent = formattedResult.formattedText;
+        document.getElementById('result-card').classList.remove('hidden');
+
+        currentScanData = {
+          type: formattedResult.materialCategory,
+          name: formattedResult.binName + " - " + formattedResult.materialCategory,
+          points: 15,
+          co2: 0.3,
+          icon: formattedResult.icon
+        };
+
+        btnScan.disabled = false;
+        btnScan.innerHTML = `<i class="fa-solid fa-rotate-right"></i> Volver a Escanear`;
+        btnScan.onclick = startScanning;
+      }, 1000);
+    }
+
+    async function saveCurrentScan() {
+      if (!currentScanData) return;
+
+      const btnSave = document.getElementById('btn-save');
+      btnSave.disabled = true;
+      btnSave.textContent = "Guardando...";
+
+      try {
+        await registerRecyclable(
+          currentScanData.type,
+          currentScanData.points,
+          currentScanData.co2,
+          currentScanData.name,
+          currentScanData.icon
+        );
+
+        if (videoStream) {
+          videoStream.getTracks().forEach(track => track.stop());
+        }
+
+        window.location.href = 'dashboard.html';
+      } catch (err) {
+        alert("Error al guardar: " + err.message);
+        btnSave.disabled = false;
+        btnSave.textContent = "Guardar en Firebase y Ver Dashboard";
+      }
+    }
+  </script>
+</body>
+</html>

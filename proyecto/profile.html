@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECOLOOP - Mi Perfil</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 pb-28 max-w-md mx-auto shadow-2xl min-h-screen relative flex flex-col justify-between">
+
+  <!-- Header -->
+  <header class="p-4 px-5 flex justify-between items-center bg-white border-b border-slate-100 sticky top-0 z-30">
+    <div class="flex items-center gap-2">
+      <a href="dashboard.html" class="w-8 h-8 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center">
+        <i class="fa-solid fa-arrow-left text-sm"></i>
+      </a>
+      <span class="font-extrabold text-slate-800 tracking-wider text-base">Perfil Universitario</span>
+    </div>
+  </header>
+
+  <main class="p-4 space-y-4 flex-1">
+    
+    <!-- TARJETA DE USUARIO -->
+    <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm text-center space-y-3">
+      <div class="w-20 h-20 mx-auto rounded-full bg-emerald-100 border-4 border-emerald-500 overflow-hidden flex items-center justify-center text-3xl text-emerald-700 shadow-md">
+        <i class="fa-solid fa-user-graduate"></i>
+      </div>
+      <div>
+        <h2 id="profile-name" class="font-black text-lg text-slate-900">Cargando...</h2>
+        <p id="profile-email" class="text-xs text-slate-400">cargando@continental.edu.pe</p>
+      </div>
+      <span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-extrabold px-3 py-1 rounded-full">
+        Estudiante EcoLider UC
+      </span>
+    </div>
+
+    <!-- OPCIONES DE CUENTA -->
+    <div class="bg-white rounded-3xl border border-slate-100 shadow-sm divide-y divide-slate-100 overflow-hidden">
+      <div class="p-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-university text-emerald-600"></i>
+          <span class="text-xs font-bold text-slate-800">Sede Universidad</span>
+        </div>
+        <span class="text-xs text-slate-400 font-semibold">Campus Huancayo / UC</span>
+      </div>
+
+      <div class="p-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-shield-halved text-emerald-600"></i>
+          <span class="text-xs font-bold text-slate-800">Estado de Cuenta</span>
+        </div>
+        <span class="text-xs text-emerald-600 font-extrabold">Activa</span>
+      </div>
+    </div>
+
+    <!-- BOTÓN CERRAR SESIÓN -->
+    <button onclick="logoutUser()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 font-bold py-3.5 px-4 rounded-2xl transition text-xs flex items-center justify-center gap-2">
+      <i class="fa-solid fa-right-from-bracket"></i>
+      <span>Cerrar Sesión</span>
+    </button>
+
+  </main>
+
+  <!-- NAVEGACIÓN INFERIOR -->
+  <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/95 backdrop-blur-md border-t border-slate-100 px-6 py-2.5 flex justify-between items-center z-40 shadow-lg">
+    <a href="dashboard.html" class="flex flex-col items-center gap-1 text-slate-400 font-medium">
+      <i class="fa-solid fa-border-all text-base"></i>
+      <span class="text-[10px]">Panel</span>
+    </a>
+    
+    <a href="scan.html" class="flex flex-col items-center gap-1 text-slate-400 font-medium">
+      <div class="w-10 h-10 bg-emerald-700 text-white rounded-full flex items-center justify-center -mt-6 shadow-lg shadow-emerald-700/30">
+        <i class="fa-solid fa-qrcode text-base"></i>
+      </div>
+      <span class="text-[10px]">Escanear</span>
+    </a>
+
+    <a href="recompensas.html" class="flex flex-col items-center gap-1 text-slate-400 font-medium">
+      <i class="fa-solid fa-gift text-base"></i>
+      <span class="text-[10px]">Recompensas</span>
+    </a>
+
+    <a href="profile.html" class="flex flex-col items-center gap-1 text-emerald-600 font-bold">
+      <i class="fa-regular fa-user text-base"></i>
+      <span class="text-[10px]">Perfil</span>
+    </a>
+  </nav>
+
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="app.js"></script>
+  <script>
+    checkAuth((user) => {
+      document.getElementById('profile-name').textContent = user.displayName || 'Estudiante UC';
+      document.getElementById('profile-email').textContent = user.email || '';
+    });
+  </script>
+</body>
+</html>

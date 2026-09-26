@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECOLOOP - Panel Principal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; }
+    .donut-chart { border-radius: 50%; transition: background 0.5s ease; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 pb-28 max-w-md mx-auto shadow-2xl min-h-screen relative">
+
+  <!-- Header -->
+  <header class="p-4 px-5 flex justify-between items-center bg-white sticky top-0 z-30 border-b border-slate-100">
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center font-extrabold text-sm">
+        <i class="fa-solid fa-infinity"></i>
+      </div>
+      <span class="font-extrabold text-slate-800 tracking-wider text-base">ECOLOOP UC</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <a href="profile.html" class="w-9 h-9 rounded-full bg-emerald-100 overflow-hidden border-2 border-emerald-500 shadow-sm flex items-center justify-center text-emerald-700 font-bold">
+        <i class="fa-regular fa-user"></i>
+      </a>
+    </div>
+  </header>
+
+  <main class="p-4 space-y-5">
+    
+    <!-- BANNER PRINCIPAL -->
+    <div class="bg-gradient-to-br from-emerald-800 via-emerald-700 to-teal-900 text-white p-5 rounded-3xl shadow-xl relative overflow-hidden">
+      <div class="flex justify-between items-center text-[11px] font-bold mb-3">
+        <span class="bg-white/15 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
+          🌱 Campus Continental
+        </span>
+        <span class="bg-white/15 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
+          🛡️ Héroe Nivel 4
+        </span>
+      </div>
+      
+      <h1 class="text-2xl font-black mb-1">¡Hola, <span id="dash-username">Cargando...</span>! 🌿</h1>
+      <p class="text-xs text-emerald-100/90 mb-5 font-normal leading-relaxed">
+        Cada residuo clasificado apoya a la sostenibilidad de nuestra universidad.
+      </p>
+
+      <div class="grid grid-cols-2 gap-3 pt-3 border-t border-white/15">
+        <div>
+          <p class="text-[10px] text-emerald-200 uppercase font-extrabold tracking-wider">OBJETOS ESCANEADOS</p>
+          <p class="text-2xl font-black mt-0.5"><span id="dash-items">0</span> <span class="text-xs font-semibold text-emerald-200">residuos</span></p>
+        </div>
+        <div>
+          <p class="text-[10px] text-emerald-200 uppercase font-extrabold tracking-wider">CO₂ EVITADO</p>
+          <p class="text-2xl font-black mt-0.5"><span id="dash-co2">0.0</span> <span class="text-xs font-semibold text-emerald-200">kg CO₂</span></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TARJETAS DE MÉTRICAS -->
+    <div class="grid grid-cols-3 gap-2.5">
+      <div class="bg-white p-3 rounded-2xl border border-slate-100 text-center shadow-sm">
+        <div class="w-8 h-8 mx-auto bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center text-xs mb-1">
+          <i class="fa-solid fa-trash-can"></i>
+        </div>
+        <p class="font-extrabold text-base text-slate-800" id="dash-diverted">0.0</p>
+        <p class="text-[10px] text-slate-400 font-semibold">kg Reciclados</p>
+      </div>
+      
+      <div class="bg-white p-3 rounded-2xl border border-slate-100 text-center shadow-sm">
+        <div class="w-8 h-8 mx-auto bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-xs mb-1">
+          <i class="fa-regular fa-calendar-check"></i>
+        </div>
+        <p class="font-extrabold text-base text-slate-800">18</p>
+        <p class="text-[10px] text-slate-400 font-semibold">Días Activo</p>
+      </div>
+
+      <div class="bg-white p-3 rounded-2xl border border-slate-100 text-center shadow-sm">
+        <div class="w-8 h-8 mx-auto bg-amber-50 text-amber-600 rounded-full flex items-center justify-center text-xs mb-1">
+          <i class="fa-solid fa-coins"></i>
+        </div>
+        <p class="font-extrabold text-base text-amber-600" id="dash-points">0</p>
+        <p class="text-[10px] text-slate-400 font-semibold">EcoPuntos</p>
+      </div>
+    </div>
+
+    <!-- DESGLOSE DE MATERIALES -->
+    <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm space-y-3">
+      <div class="flex justify-between items-center">
+        <div>
+          <h2 class="font-extrabold text-sm text-slate-900">Desglose por Tacho</h2>
+          <p class="text-[11px] text-slate-400">Clasificación en tiempo real</p>
+        </div>
+        <span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2.5 py-1 rounded-full">Histórico</span>
+      </div>
+
+      <div class="flex items-center gap-4 pt-1">
+        <div class="relative w-28 h-28 flex-shrink-0 flex items-center justify-center">
+          <div id="donut-chart" class="donut-chart w-full h-full bg-slate-200"></div>
+          <div class="absolute w-20 h-20 bg-white rounded-full flex flex-col items-center justify-center text-center shadow-inner">
+            <span id="dash-chart-total" class="font-black text-lg text-slate-900 leading-none">0</span>
+            <span class="text-[9px] font-extrabold text-slate-400 tracking-wider">TOTAL</span>
+          </div>
+        </div>
+
+        <div id="materials-legend" class="grid grid-cols-2 gap-x-3 gap-y-2 text-xs flex-1">
+          <p class="text-xs text-slate-400 col-span-2">Cargando desglose...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- REGISTROS RECIENTES -->
+    <div class="space-y-3">
+      <div class="flex justify-between items-center">
+        <h2 class="font-extrabold text-sm text-slate-900">Últimos Escaneos</h2>
+        <span class="text-[10px] font-extrabold text-emerald-600 tracking-wider flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> EN VIVO
+        </span>
+      </div>
+
+      <div id="recent-logs-list" class="space-y-2.5">
+        <p class="text-xs text-slate-400 text-center py-4">Cargando actividad reciente...</p>
+      </div>
+    </div>
+
+    <!-- BOTÓN IR A ESCANEAR -->
+    <a href="scan.html" class="w-full bg-emerald-900 hover:bg-emerald-950 text-white font-extrabold py-4 px-6 rounded-2xl shadow-xl flex items-center justify-center gap-3 transition active:scale-95 text-sm">
+      <i class="fa-solid fa-qrcode text-base"></i>
+      <span>Escanear Residuo Ahora</span>
+      <span class="bg-emerald-700 text-emerald-100 text-[11px] font-bold px-2.5 py-0.5 rounded-full">+Puntos</span>
+    </a>
+
+  </main>
+
+  <!-- NAVEGACIÓN INFERIOR (CON RECOMPENSAS) -->
+  <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/95 backdrop-blur-md border-t border-slate-100 px-6 py-2.5 flex justify-between items-center z-40 shadow-lg">
+    <a href="dashboard.html" class="flex flex-col items-center gap-1 text-emerald-600 font-bold">
+      <i class="fa-solid fa-border-all text-base"></i>
+      <span class="text-[10px]">Panel</span>
+    </a>
+    
+    <a href="scan.html" class="flex flex-col items-center gap-1 text-slate-400 font-medium">
+      <div class="w-10 h-10 bg-emerald-700 text-white rounded-full flex items-center justify-center -mt-6 shadow-lg shadow-emerald-700/30">
+        <i class="fa-solid fa-qrcode text-base"></i>
+      </div>
+      <span class="text-[10px]">Escanear</span>
+    </a>
+
+    <a href="recompensas.html" class="flex flex-col items-center gap-1 text-slate-400 font-medium">
+      <i class="fa-solid fa-gift text-base"></i>
+      <span class="text-[10px]">Recompensas</span>
+    </a>
+
+    <a href="profile.html" class="flex flex-col items-center gap-1 text-slate-400 font-medium">
+      <i class="fa-regular fa-user text-base"></i>
+      <span class="text-[10px]">Perfil</span>
+    </a>
+  </nav>
+
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="app.js"></script>
+  <script>
+    checkAuth((user) => {
+      loadDashboardData(user);
+    });
+  </script>
+</body>
+</html>
